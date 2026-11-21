@@ -55,9 +55,10 @@ wss.on('connection', (ws, req) => {
       if (room.peers.length >= 2) return send(ws, { type: 'room-full' });
       ws.roomCode = code;
       ws.role = room.peers.length === 0 ? 'host' : 'guest';
+      ws.displayName = String(msg.name || 'คนถ่าย').slice(0, 18);
       room.peers.push(ws);
       send(ws, { type: ws.role === 'host' ? 'waiting' : 'joined', room: code, role: ws.role });
-      if (room.peers.length === 2) room.peers.forEach(peer => send(peer, { type: 'room-ready', role: peer.role }));
+      if (room.peers.length === 2) room.peers.forEach(peer => { const other = room.peers.find(p => p !== peer); send(peer, { type: 'room-ready', role: peer.role, name: other?.displayName || 'อีกคน' }); });
       return;
     }
     const room = roomFor(ws);
