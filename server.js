@@ -74,7 +74,7 @@ wss.on('connection', (ws, req) => {
       room.peers.filter(peer => peer !== ws).forEach(peer => send(peer, { type: 'peer-left' }));
       return;
     }
-    if (msg.type === 'signal' && msg.data && ['offer', 'answer', 'candidate'].includes(msg.data.type)) {
+    if (msg.type === 'signal' && msg.data && ['offer', 'answer', 'candidate', 'sync-capture'].includes(msg.data.type)) {
       room.peers.filter(peer => peer !== ws).forEach(peer => send(peer, { type: 'signal', data: msg.data }));
     }
   });
