@@ -10,6 +10,7 @@ const server=http.createServer((req,res)=>{
  const pathname=new URL(req.url,'http://localhost').pathname;
  if(pathname==='/health'){res.writeHead(200,{'content-type':'application/json','cache-control':'no-store'});return res.end(JSON.stringify({ok:true,maxPeers:MAX_PEERS}))}
  if((pathname==='/'||pathname==='/index.html')&&req.method==='GET'){res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});return fs.createReadStream(indexPath).pipe(res)}
+ if(pathname.startsWith('/assets/')&&req.method==='GET'){const name=path.basename(decodeURIComponent(pathname.slice(8)));const assetPath=path.join(__dirname,'assets',name);if(name==='.'||name==='..'||!fs.existsSync(assetPath)){res.writeHead(404);return res.end('Not found')}const type=name.endsWith('.webp')?'image/webp':'application/octet-stream';res.writeHead(200,{'content-type':type,'cache-control':'public, max-age=31536000, immutable'});return fs.createReadStream(assetPath).pipe(res)}
  res.writeHead(404,{'content-type':'text/plain; charset=utf-8'});res.end('Not found')
 });
 const wss=new WebSocketServer({server,path:'/signal',maxPayload:128*1024});
